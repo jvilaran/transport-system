@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 
 class UserController extends Controller
 {
@@ -72,6 +73,39 @@ class UserController extends Controller
         $user = User::find($id)->toArray();
 
         return view('User.dashboard', compact('user'));
+    }
+
+    /**
+     * Profile of user
+     */
+    public function profile(int $id)
+    {
+        $user = User::find($id)->toArray();
+
+        return view('User.profile', compact('user'));
+    }
+
+    /**
+     * Services of user
+     */
+    public function services(int $id)
+    {
+        $user = User::find($id)->toArray();
+
+        return view('User.services', compact('user'));
+    }
+
+    /**
+     * Log out
+     */
+    public function logOut(): RedirectResponse
+    {
+        Auth::logout(); // Cierra la sesión del usuario
+
+        request()->session()->invalidate();       // Invalida la sesión actual
+        request()->session()->regenerateToken();  // Regenera el token CSRF por seguridad
+
+        return redirect('/login'); // Redirige al usuario al login (o donde tú quieras)
     }
 
     /**
