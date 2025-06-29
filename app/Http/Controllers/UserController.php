@@ -18,71 +18,27 @@ class UserController extends Controller
     }
 
     /**
-     * Register the user.
-     */
-    public function register(Request $request)
-    {
-        if ($request->isMethod('post')) {
-
-            $user = User::create([
-                'name' => $request['name'],
-                'username' => $request['username'],
-                'email' => $request['email'],
-                'password' => bcrypt($request['password']),
-            ]);
-
-            if ($user) {
-                return redirect()->route('login')->with('success', 'Registration successful! Please log in.');
-            }
-
-            return redirect()->back()->withErrors(['registration' => 'Registration failed. Please try again.']);
-        }
-
-        return view('User.register');
-    }
-
-    /**
-     * Login the user.
-     */
-    public function login(Request $request)
-    {
-        if ($request->isMethod('post')) {
-
-            $credentials = $request->only('username', 'password');
-
-            if (Auth::attempt($credentials)) {
-                // Authentication passed, redirect to the dashboard
-                $user = Auth::user();
-                return redirect()->route('dashboard', ['id' => $user->id])->with('success', 'Login successful!');
-            }
-            
-
-            return redirect()->back()->withErrors(['login' => 'Invalid credentials. Please try again.']);
-        }
-
-
-        return view('User.login');
-
-    }
-
-    /**
      * Display the specified resource.
      */
-    public function dashboard(int $id)
+    public function dashboard()
     {
-        $user = User::find($id)->toArray();
+        $user = Auth::user();
 
-        return view('User.dashboard', compact('user'));
+        return inertia('User/Dashboard', [
+            'user' => $user,
+        ]);
     }
 
     /**
      * Profile of user
      */
-    public function profile(int $id)
+    public function profile()
     {
-        $user = User::find($id)->toArray();
+        $user = Auth::user();
 
-        return view('User.profile', compact('user'));
+        return inertia('User/Profile', [
+            'user' => $user,
+        ]);
     }
 
     /**
@@ -93,19 +49,6 @@ class UserController extends Controller
         $user = User::find($id)->toArray();
 
         return view('User.services', compact('user'));
-    }
-
-    /**
-     * Log out
-     */
-    public function logOut(): RedirectResponse
-    {
-        Auth::logout(); // Cierra la sesión del usuario
-
-        request()->session()->invalidate();       // Invalida la sesión actual
-        request()->session()->regenerateToken();  // Regenera el token CSRF por seguridad
-
-        return redirect('/login'); // Redirige al usuario al login (o donde tú quieras)
     }
 
     /**
