@@ -39,6 +39,26 @@
         </header>
 
         <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div>
+                <div
+                    v-if="$page.props.flash.success"
+                    class="bg-green-100 text-green-800 p-2 rounded mb-4"
+                >
+                    {{ $page.props.flash.success }}
+                </div>
+                <div
+                    v-if="$page.props.flash.warning"
+                    class="bg-orange-100 text-orange-800 p-2 rounded mb-4"
+                >
+                    {{ $page.props.flash.warning }}
+                </div>
+                <div
+                    v-if="$page.props.flash.error"
+                    class="bg-red-100 text-red-800 p-2 rounded mb-4"
+                >
+                    {{ $page.props.flash.error }}
+                </div>
+            </div>
             <slot />
         </main>
     </div>

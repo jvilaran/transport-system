@@ -15,8 +15,7 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        if (Auth::check()) 
-        {
+        if (Auth::check()) {
             return redirect()->route('dashboard');
         }
 
@@ -25,10 +24,8 @@ class AuthController extends Controller
             $credentials = $request->only('username', 'password');
 
             if (Auth::attempt($credentials)) {
-                session()->flash('success', 'Login successful!');
 
-                return inertia()->location(route('dashboard'));
-
+                return redirect()->route('dashboard')->with('success', 'Login successful!');
             }
 
             return redirect()->back()->withErrors(['login' => 'Invalid credentials. Please try again.']);
@@ -36,7 +33,7 @@ class AuthController extends Controller
 
         return inertia('Auth/Login');
     }
-    
+
     /**
      * Register the user.
      */
@@ -45,17 +42,16 @@ class AuthController extends Controller
         if ($request->isMethod('post')) {
 
             $user = User::create([
-                'name' => $request['name'],
+                'name' => $request['name'] ?? '',
                 'username' => $request['username'],
                 'email' => $request['email'],
+                'role' => $request['role'],
                 'password' => bcrypt($request['password']),
             ]);
 
             if ($user) {
 
-                session()->flash('success', 'Registration successful! Please log in.');
-
-                return inertia('Auth/Login');
+                return redirect()->route('login')->with('success', 'Registration successful! Please log in.');
             }
 
             return redirect()->back()->withErrors(['registration' => 'Registration failed. Please try again.']);
